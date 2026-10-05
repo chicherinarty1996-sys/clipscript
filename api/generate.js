@@ -1,7 +1,14 @@
 export default async function handler(req, res) {
-  const allowedOrigin = "https://chicherinarty1996-sys.github.io";
+  const allowedOrigins = [
+    "https://chicherinarty1996-sys.github.io",
+    "https://clipscript-two.vercel.app",
+    "https://clipscript-mes30wv9c-forkins.vercel.app"
+  ];
 
-  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Vary", "Origin");
@@ -27,20 +34,26 @@ export default async function handler(req, res) {
         "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-20b",
         messages: [{ role: "user", content: prompt }],
         temperature: 0.75,
-        max_tokens: 4096
+        max_completion_tokens: 4096
       })
     });
 
     const data = await upstream.json();
 
     if (!upstream.ok) {
-      return res.status(upstream.status).json({ error: data?.error?.message || "Groq request failed" });
+      return res.status(upstream.status).json({
+        error: data?.error?.message || "Groq request failed"
+      });
     }
 
     const text = data?.choices?.[0]?.message?.content || "";
+    if (!text) {
+      return res.status(502).json({ error: "AI returned an empty response" });
+    }
+
     return res.status(200).json({ text });
   } catch (error) {
     return res.status(500).json({ error: "AI request failed" });
