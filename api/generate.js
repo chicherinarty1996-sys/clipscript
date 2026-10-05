@@ -1,24 +1,19 @@
 export default async function handler(req, res) {
-  if (req.method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-    return res.status(204).end();
-  }
+  const allowedOrigin = "https://chicherinarty1996-sys.github.io";
 
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Use POST" });
-  }
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Vary", "Origin");
+
+  if (req.method === "OPTIONS") return res.status(204).end();
+
+  if (req.method !== "POST") return res.status(405).json({ error: "Use POST" });
 
   const prompt = typeof req.body?.prompt === "string" ? req.body.prompt.trim() : "";
 
-  if (prompt.length < 20) {
-    return res.status(400).json({ error: "Prompt is too short" });
-  }
-
-  if (prompt.length > 30000) {
-    return res.status(413).json({ error: "Text is too long (max 30000 characters)" });
-  }
+  if (prompt.length < 20) return res.status(400).json({ error: "Prompt is too short" });
+  if (prompt.length > 30000) return res.status(413).json({ error: "Text is too long (max 30000 characters)" });
 
   if (!process.env.GROQ_API_KEY) {
     return res.status(500).json({ error: "GROQ_API_KEY is not configured in Vercel" });
@@ -42,13 +37,10 @@ export default async function handler(req, res) {
     const data = await upstream.json();
 
     if (!upstream.ok) {
-      return res.status(upstream.status).json({
-        error: data?.error?.message || "Groq request failed"
-      });
+      return res.status(upstream.status).json({ error: data?.error?.message || "Groq request failed" });
     }
 
     const text = data?.choices?.[0]?.message?.content || "";
-
     return res.status(200).json({ text });
   } catch (error) {
     return res.status(500).json({ error: "AI request failed" });
