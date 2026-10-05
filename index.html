@@ -22,9 +22,9 @@
 </section><div class="footer">ClipScript · AI-контент из расшифровки</div>
 </main><div class="toast" id="toast"></div>
 <script>
-const API_URL="/api/generate";const $=id=>document.getElementById(id);
+const API_URL="https://clipscript-mes30wv9c-forkins.vercel.app/api/generate";const $=id=>document.getElementById(id);
 function updateCount(){$('count').textContent=$('source').value.length.toLocaleString('ru-RU')+' символов'}$('source').addEventListener('input',updateCount);
-function notify(msg){let t=$('toast');t.textContent=msg;t.style.display='block';clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.style.display='none',2200)}
+function notify(msg){let t=$('toast');t.textContent=msg;t.style.display='block';clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.style.display='none',3000)}
 function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 let current=[];
 function render(answer){current=[{title:'Готовый контент',body:answer}];$('output').innerHTML='<div class="resulttop"><small>Результат AI · можно редактировать</small><div class="actions"><button class="btn" onclick="copyAll()">Копировать</button><button class="btn" onclick="downloadTxt()">Экспорт .txt</button></div></div><div class="item"><div class="itemhead"><span class="tag">CLIPSCRIPT AI</span><button class="copyone" onclick="copyAll()">Копировать</button></div><textarea oninput="current[0].body=this.value">'+escapeHtml(answer)+'</textarea></div>'}
