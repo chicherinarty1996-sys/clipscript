@@ -22,7 +22,7 @@
 </section><div class="footer">ClipScript · AI-контент из расшифровки</div>
 </main><div class="toast" id="toast"></div>
 <script>
-const API_URL="https://clipscript-mes30wv9c-forkins.vercel.app/api/generate";const $=id=>document.getElementById(id);
+const API_URL="/api/generate";const $=id=>document.getElementById(id);
 function updateCount(){$('count').textContent=$('source').value.length.toLocaleString('ru-RU')+' символов'}$('source').addEventListener('input',updateCount);
 function notify(msg){let t=$('toast');t.textContent=msg;t.style.display='block';clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.style.display='none',3000)}
 function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
